@@ -276,7 +276,7 @@ def get_company_name(lsp_name):
     else:
         return lsp_name
 
-def fetch_launches(start_date, end_date, limit=5000):
+def fetch_launches(start_date, end_date, limit=2000):
     """获取指定日期范围的发射数据，使用分页"""
     all_launches = []
     offset = 0
