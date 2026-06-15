@@ -1,0 +1,37 @@
+name: Update Rocket Launch Data
+
+on:
+  schedule:
+    # 每两周更新一次 (每14天)
+    - cron: '0 8 */14 * *'
+  workflow_dispatch:  # 手动触发
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Fetch launch data
+        run: python fetch_data.py
+        
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          # 检查是否有变化
+          if git diff --stat | grep -q "data/"; then
+            git add data/
+            git commit -m "chore: 更新火箭发射数据 $(date +'%Y-%m-%d')"
+            git push
+          else
+            echo "No data changes, skipping commit"
+          fi

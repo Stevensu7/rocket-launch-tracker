@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>火箭发射追踪系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 1px solid #334155;
+            margin-bottom: 30px;
+        }
+        header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        header .subtitle {
+            color: #94a3b8;
+            margin-top: 8px;
+            font-size: 0.9rem;
+        }
+        .tabs {
+            display: flex;
+            gap: 4px;
+            background: #1e293b;
+            padding: 4px;
+            border-radius: 12px;
+            width: fit-content;
+            margin: 0 auto 24px;
+        }
+        .tab {
+            padding: 10px 24px;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .tab.active {
+            background: #3b82f6;
+            color: white;
+        }
+        .tab:hover:not(.active) {
+            background: #334155;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #60a5fa;
+        }
+        .stat-card .label {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+        .stat-card.success .value { color: #22c55e; }
+        .stat-card.failure .value { color: #ef4444; }
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        @media (max-width: 900px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .chart-card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .chart-card h3 {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-bottom: 16px;
+        }
+        .filter-bar {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .filter-group label {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+        select, input {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: #e2e8f0;
+            font-size: 0.9rem;
+            min-width: 140px;
+        }
+        select:focus, input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+        .btn-secondary {
+            background: #334155;
+            color: #e2e8f0;
+        }
+        .btn-secondary:hover {
+            background: #475569;
+        }
+        .table-container {
+            background: #1e293b;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            background: #0f172a;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #334155;
+            font-size: 0.9rem;
+        }
+        tr:hover {
+            background: #334155;
+        }
+        .result-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .result-success { background: #22c55e20; color: #22c55e; }
+        .result-failure { background: #ef444420; color: #ef4444; }
+        .result-partial { background: #f59e0b20; color: #f59e0b; }
+        .result-tbd { background: #64748b20; color: #94a3b8; }
+        .export-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            justify-content: flex-end;
+        }
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: #64748b;
+            font-size: 0.8rem;
+        }
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #60a5fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 火箭发射追踪系统</h1>
+            <div class="subtitle">数据每两周自动更新 · 2023年至今</div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="china">🇨🇳 中国发射</button>
+            <button class="tab" data-tab="global">🌍 全球发射</button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="value" id="stat-total">-</div>
+                <div class="label">总发射次数</div>
+            </div>
+            <div class="stat-card success">
+                <div class="value" id="stat-success">-</div>
+                <div class="label">成功率</div>
+            </div>
+            <div class="stat-card">
+                <div class="value" id="stat-month">-</div>
+                <div class="label">本月发射</div>
+            </div>
+            <div class="stat-card">
+                <div class="value" id="stat-china-rocket">-</div>
+                <div class="label">长征系列</div>
+            </div>
+        </div>
+
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3>📈 月度发射趋势</h3>
+                <canvas id="trendChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>🥧 火箭型号分布</h3>
+                <canvas id="rocketChart"></canvas>
+            </div>
+        </div>
+
+        <div class="filter-bar">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label>时间范围</label>
+                    <select id="filter-year">
+                        <option value="">全部年份</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>火箭型号</label>
+                    <select id="filter-rocket">
+                        <option value="">全部型号</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>发射场</label>
+                    <select id="filter-site">
+                        <option value="">全部发射场</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>发射结果</label>
+                    <select id="filter-result">
+                        <option value="">全部</option>
+                        <option value="success">成功</option>
+                        <option value="failure">失败</option>
+                        <option value="partial">部分成功</option>
+                    </select>
+                </div>
+                <div class="filter-group" style="flex:1">
+                    <label>搜索</label>
+                    <input type="text" id="search-input" placeholder="搜索载荷/卫星名称...">
+                </div>
+                <button class="btn btn-secondary" id="reset-btn">重置</button>
+            </div>
+        </div>
+
+        <div class="export-row">
+            <button class="btn btn-secondary" id="export-csv">📥 导出CSV</button>
+            <button class="btn btn-secondary" id="export-json">📥 导出JSON</button>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>日期</th>
+                        <th>火箭型号</th>
+                        <th>发射场</th>
+                        <th>载荷</th>
+                        <th>卫星数</th>
+                        <th>性质</th>
+                        <th>轨道</th>
+                        <th>结果</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <tr><td colspan="8" class="loading">加载中...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <footer>
+            <div>数据来源: The Space Devs API · 最后更新: <span id="last-updated">-</span></div>
+        </footer>
+    </div>
+
+    <script>
+        // 全局状态
+        let currentTab = 'china';
+        let allData = { china: [], global: [] };
+        let filteredData = [];
+
+        // 图表实例
+        let trendChart = null;
+        let rocketChart = null;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', async () => {
+            initTabs();
+            await loadData();
+            initFilters();
+            initExport();
+        });
+
+        // Tab切换
+        function initTabs() {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    currentTab = tab.dataset.tab;
+                    renderAll();
+                });
+            });
+        }
+
+        // 加载数据
+        async function loadData() {
+            try {
+                const [chinaRes, globalRes] = await Promise.all([
+                    fetch('data/china.json'),
+                    fetch('data/global.json')
+                ]);
+                const chinaData = await chinaRes.json();
+                const globalData = await globalRes.json();
+                
+                allData.china = chinaData.launches || [];
+                allData.global = globalData.launches || [];
+                
+                document.getElementById('last-updated').textContent = 
+                    new Date(chinaData.last_updated).toLocaleString('zh-CN');
+                
+                renderAll();
+            } catch (e) {
+                console.error('Failed to load data:', e);
+                document.getElementById('table-body').innerHTML = 
+                    '<tr><td colspan="8" class="no-data">数据加载失败</td></tr>';
+            }
+        }
+
+        // 初始化筛选器
+        function initFilters() {
+            const yearSelect = document.getElementById('filter-year');
+            const rocketSelect = document.getElementById('filter-rocket');
+            const siteSelect = document.getElementById('filter-site');
+            
+            // 动态填充筛选选项
+            const years = [...new Set(allData.china.map(l => l.date?.substring(0, 4)))].filter(Boolean).sort().reverse();
+            years.forEach(y => yearSelect.add(new Option(y + '年', y)));
+            
+            const rockets = [...new Set(allData.china.map(l => l.rocket_model))].filter(Boolean).sort();
+            rockets.forEach(r => rocketSelect.add(new Option(r, r)));
+            
+            const sites = [...new Set(allData.china.map(l => l.launch_site))].filter(Boolean).sort();
+            sites.forEach(s => siteSelect.add(new Option(s, s)));
+            
+            // 监听筛选变化
+            [yearSelect, rocketSelect, siteSelect, document.getElementById('filter-result')]
+                .forEach(el => el.addEventListener('change', applyFilters));
+            
+            document.getElementById('search-input').addEventListener('input', debounce(applyFilters, 300));
+            document.getElementById('reset-btn').addEventListener('click', resetFilters);
+        }
+
+        // 应用筛选
+        function applyFilters() {
+            const year = document.getElementById('filter-year').value;
+            const rocket = document.getElementById('filter-rocket').value;
+            const site = document.getElementById('filter-site').value;
+            const result = document.getElementById('filter-result').value;
+            const search = document.getElementById('search-input').value.toLowerCase();
+            
+            filteredData = allData[currentTab].filter(launch => {
+                if (year && !launch.date?.startsWith(year)) return false;
+                if (rocket && launch.rocket_model !== rocket) return false;
+                if (site && launch.launch_site !== site) return false;
+                if (result && launch.result !== result) return false;
+                if (search && !launch.payload?.toLowerCase().includes(search) && 
+                    !launch.rocket_model?.toLowerCase().includes(search)) return false;
+                return true;
+            });
+            
+            renderTable();
+            renderStats();
+        }
+
+        // 重置筛选
+        function resetFilters() {
+            document.getElementById('filter-year').value = '';
+            document.getElementById('filter-rocket').value = '';
+            document.getElementById('filter-site').value = '';
+            document.getElementById('filter-result').value = '';
+            document.getElementById('search-input').value = '';
+            filteredData = [...allData[currentTab]];
+            renderAll();
+        }
+
+        // 渲染所有
+        function renderAll() {
+            filteredData = [...allData[currentTab]];
+            renderTable();
+            renderStats();
+            renderCharts();
+        }
+
+        // 渲染统计卡片
+        function renderStats() {
+            const data = filteredData;
+            const total = data.length;
+            const success = data.filter(l => l.result === 'success').length;
+            const rate = total ? ((success / total) * 100).toFixed(1) : 0;
+            
+            const now = new Date();
+            const thisMonth = data.filter(l => {
+                if (!l.date) return false;
+                const [y, m] = l.date.split('-');
+                return parseInt(y) === now.getFullYear() && parseInt(m) === now.getMonth() + 1;
+            }).length;
+            
+            const chinaOnly = currentTab === 'china';
+            const longMarch = data.filter(l => l.rocket_model?.includes('长征')).length;
+            
+            document.getElementById('stat-total').textContent = total;
+            document.getElementById('stat-success').textContent = rate + '%';
+            document.getElementById('stat-month').textContent = thisMonth;
+            document.getElementById('stat-china-rocket').textContent = longMarch;
+        }
+
+        // 渲染表格
+        function renderTable() {
+            const tbody = document.getElementById('table-body');
+            
+            if (filteredData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="no-data">无匹配数据</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = filteredData.map(launch => `
+                <tr>
+                    <td>${launch.date || '-'}</td>
+                    <td>${launch.rocket_model || '-'}</td>
+                    <td>${launch.launch_site || '-'}</td>
+                    <td title="${launch.payload || ''}">${(launch.payload || '-').substring(0, 30)}</td>
+                    <td>${launch.satellite_count || 1}</td>
+                    <td>${launch.satellite_nature || '-'}</td>
+                    <td>${launch.orbit_type || '-'}</td>
+                    <td><span class="result-badge result-${launch.result || 'tbd'}">${getResultText(launch.result)}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        // 渲染图表
+        function renderCharts() {
+            const data = filteredData;
+            
+            // 按月统计
+            const monthlyData = {};
+            data.forEach(l => {
+                if (!l.date) return;
+                const key = l.date.substring(0, 7);
+                monthlyData[key] = (monthlyData[key] || 0) + 1;
+            });
+            
+            const sortedMonths = Object.keys(monthlyData).sort().slice(-12);
+            const monthLabels = sortedMonths.map(m => m.substring(5) + '月');
+            const monthValues = sortedMonths.map(m => monthlyData[m]);
+            
+            // 火箭型号统计
+            const rocketData = {};
+            data.forEach(l => {
+                if (!l.rocket_model) return;
+                const rocket = l.rocket_model;
+                rocketData[rocket] = (rocketData[rocket] || 0) + 1;
+            });
+            
+            const topRockets = Object.entries(rocketData)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 8);
+            
+            // 渲染月度趋势图
+            const trendCtx = document.getElementById('trendChart').getContext('2d');
+            if (trendChart) trendChart.destroy();
+            trendChart = new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: monthLabels,
+                    datasets: [{
+                        label: '发射次数',
+                        data: monthValues,
+                        borderColor: '#60a5fa',
+                        backgroundColor: 'rgba(96, 165, 250, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { color: '#64748b' }, grid: { color: '#334155' } },
+                        x: { ticks: { color: '#64748b' }, grid: { display: false } }
+                    }
+                }
+            });
+            
+            // 渲染火箭分布图
+            const rocketCtx = document.getElementById('rocketChart').getContext('2d');
+            if (rocketChart) rocketChart.destroy();
+            rocketChart = new Chart(rocketCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: topRockets.map(r => r[0]),
+                    datasets: [{
+                        data: topRockets.map(r => r[1]),
+                        backgroundColor: [
+                            '#60a5fa', '#a78bfa', '#22c55e', '#f59e0b',
+                            '#ef4444', '#ec4899', '#14b8a6', '#64748b'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: { color: '#94a3b8', font: { size: 11 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 导出功能
+        function initExport() {
+            document.getElementById('export-csv').addEventListener('click', exportCSV);
+            document.getElementById('export-json').addEventListener('click', exportJSON);
+        }
+
+        function exportCSV() {
+            const headers = ['日期', '火箭型号', '发射场', '载荷', '卫星数', '性质', '轨道', '结果', '公司'];
+            const rows = filteredData.map(l => [
+                l.date, l.rocket_model, l.launch_site, l.payload,
+                l.satellite_count, l.satellite_nature, l.orbit_type,
+                getResultText(l.result), l.company
+            ]);
+            
+            const csv = [headers, ...rows].map(r => r.map(c => `"${(c||'').replace(/"/g, '""')}"`).join(',')).join('\n');
+            downloadFile(csv, 'launches.csv', 'text/csv');
+        }
+
+        function exportJSON() {
+            const json = JSON.stringify(filteredData, null, 2);
+            downloadFile(json, 'launches.json', 'application/json');
+        }
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // 工具函数
+        function getResultText(result) {
+            const map = {
+                success: '成功',
+                failure: '失败',
+                partial: '部分成功',
+                tbd: 'TBD',
+                tbc: 'TBC',
+                go: '待发射'
+            };
+            return map[result] || result || '-';
+        }
+
+        function debounce(fn, ms) {
+            let timer;
+            return (...args) => {
+                clearTimeout(timer);
+                timer = setTimeout(() => fn(...args), ms);
+            };
+        }
+    </script>
+</body>
+</html>
