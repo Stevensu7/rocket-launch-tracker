@@ -1,7 +1,21 @@
 {
-  "last_updated": "2026-06-15T09:31:17.502012",
+  "last_updated": "2026-06-15T23:17:51.117276",
   "count": 136,
   "launches": [
+    {
+      "id": "ffc0aee1-fdd7-4638-b098-9d0c01b40663",
+      "date": "2026-06-15",
+      "time": "03:44:00",
+      "rocket_model": "Kinetica 1",
+      "launch_site": "酒泉",
+      "payload": "8 x Jilin-1",
+      "satellite_count": 1,
+      "satellite_nature": "遥感",
+      "orbit_type": "LEO",
+      "result": "success",
+      "company": "中科宇航",
+      "notes": ""
+    },
     {
       "id": "2670e4f1-d58b-4787-9c3f-f9eb03349513",
       "date": "2026-06-11",
@@ -1890,20 +1904,6 @@
       "orbit_type": "LEO",
       "result": "success",
       "company": "Galactic Energy",
-      "notes": ""
-    },
-    {
-      "id": "3f28ecb9-a83d-4424-882d-3710c686d69f",
-      "date": "2024-12-16",
-      "time": "18:50:00",
-      "rocket_model": "长征 2D",
-      "launch_site": "太原",
-      "payload": "PIESAT-2 09-12",
-      "satellite_count": 1,
-      "satellite_nature": "遥感",
-      "orbit_type": "LEO",
-      "result": "success",
-      "company": "中国航天科技集团",
       "notes": ""
     }
   ]
