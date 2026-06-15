@@ -276,31 +276,41 @@ def get_company_name(lsp_name):
     else:
         return lsp_name
 
-def fetch_launches(start_date, end_date, limit=200):
-    """获取指定日期范围的发射数据"""
+def fetch_launches(start_date, end_date, limit=5000):
+    """获取指定日期范围的发射数据，使用分页"""
     all_launches = []
     offset = 0
     batch_size = 50
+    max_offset = limit  # 安全上限
     
-    print(f"Fetching launches from {start_date} to {end_date}...")
+    print(f"Fetching launches from {start_date} to {end_date} (limit: {limit})...")
     
-    while offset < limit:
+    while offset < max_offset:
         url = f"{API_BASE}/launch/previous/?limit={batch_size}&mode=list&offset={offset}"
-        # 按时间过滤
-        url += f"&net__gte={start_date}&net__lte={end_date}"
         
         data = fetch_json(url)
         if not data or not data.get('results'):
             break
         
         launches = data['results']
-        all_launches.extend(launches)
-        print(f"  Fetched {len(launches)} launches (total: {len(all_launches)})")
+        
+        # 客户端过滤：只保留指定日期范围内的数据
+        for launch in launches:
+            net_date = launch.get('net', '')[:10] if launch.get('net') else ''
+            if net_date and net_date >= start_date and net_date <= end_date:
+                all_launches.append(launch)
+        
+        print(f"  Fetched {len(launches)}, matched {len([l for l in launches if start_date <= (l.get('net','')[:10] or '') <= end_date])} (total matched: {len(all_launches)})")
         
         if len(launches) < batch_size:
             break
         
         offset += batch_size
+        
+        # 安全检查：防止无限循环
+        if offset >= max_offset:
+            print(f"  Reached max offset limit ({max_offset})")
+            break
     
     return all_launches
 
