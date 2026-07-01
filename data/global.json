@@ -1,7 +1,21 @@
 {
-  "last_updated": "2026-06-29T12:20:51.432012",
+  "last_updated": "2026-07-01T10:59:29.569157",
   "count": 363,
   "launches": [
+    {
+      "id": "f596ad48-881e-47d6-806d-113c6dd97427",
+      "date": "2026-07-01",
+      "time": "09:43:00",
+      "rocket_model": "Pegasus XL",
+      "launch_site": "Air launch to orbit",
+      "payload": "Swift Boost Mission",
+      "satellite_count": 1,
+      "satellite_nature": "其他",
+      "orbit_type": "LEO",
+      "result": "Go",
+      "company": "诺斯罗普·格鲁曼",
+      "notes": ""
+    },
     {
       "id": "ce3db8f7-ba9b-4a2a-953c-c6c6ee926541",
       "date": "2026-06-29",
@@ -12,7 +26,7 @@
       "satellite_count": 1,
       "satellite_nature": "通信",
       "orbit_type": "LEO",
-      "result": "unknown",
+      "result": "success",
       "company": "SpaceX",
       "notes": ""
     },
@@ -5063,20 +5077,6 @@
       "rocket_model": "Falcon 9",
       "launch_site": "卡纳维拉尔角",
       "payload": "Starlink Group 6-71",
-      "satellite_count": 1,
-      "satellite_nature": "通信",
-      "orbit_type": "LEO",
-      "result": "success",
-      "company": "SpaceX",
-      "notes": ""
-    },
-    {
-      "id": "0a9a511a-7ea1-4402-8555-e087f580a5c4",
-      "date": "2025-01-04",
-      "time": "01:27:00",
-      "rocket_model": "Falcon 9",
-      "launch_site": "卡纳维拉尔角",
-      "payload": "Thuraya 4-NGS",
       "satellite_count": 1,
       "satellite_nature": "通信",
       "orbit_type": "LEO",
