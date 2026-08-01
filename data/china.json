@@ -1,7 +1,35 @@
 {
-  "last_updated": "2026-07-29T10:24:36.796767",
-  "count": 138,
+  "last_updated": "2026-08-01T09:46:44.233850",
+  "count": 140,
   "launches": [
+    {
+      "id": "394d2745-610b-409e-b4ea-2071a35f8668",
+      "date": "2026-07-30",
+      "time": "01:00:00",
+      "rocket_model": "长征 6A",
+      "launch_site": "太原",
+      "payload": "TJSW-27A & B",
+      "satellite_count": 1,
+      "satellite_nature": "军事/侦察",
+      "orbit_type": "LEO",
+      "result": "success",
+      "company": "中国航天科技集团",
+      "notes": ""
+    },
+    {
+      "id": "beac6ac1-97dd-4eb2-912c-8b4d4d15cd4e",
+      "date": "2026-07-29",
+      "time": "11:50:00",
+      "rocket_model": "长征 7A",
+      "launch_site": "文昌",
+      "payload": "Tianlian 3-01",
+      "satellite_count": 1,
+      "satellite_nature": "通信",
+      "orbit_type": "LEO",
+      "result": "success",
+      "company": "中国航天科技集团",
+      "notes": ""
+    },
     {
       "id": "fa42624c-1e30-4b4b-a06b-59b6153bc4e5",
       "date": "2026-07-23",
