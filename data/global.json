@@ -1,7 +1,21 @@
 {
-  "last_updated": "2026-08-29T13:25:46.461107",
-  "count": 359,
+  "last_updated": "2026-09-01T12:49:43.491310",
+  "count": 358,
   "launches": [
+    {
+      "id": "521f3a1c-f977-4306-9b7f-495858719adf",
+      "date": "2026-08-30",
+      "time": "11:26:04",
+      "rocket_model": "Falcon Heavy",
+      "launch_site": "卡纳维拉尔角",
+      "payload": "Nancy Grace Roman Space Telescope",
+      "satellite_count": 1,
+      "satellite_nature": "其他",
+      "orbit_type": "LEO",
+      "result": "success",
+      "company": "SpaceX",
+      "notes": ""
+    },
     {
       "id": "a57aed97-b94f-42e1-905e-9421dbd96ac8",
       "date": "2026-08-27",
@@ -4998,34 +5012,6 @@
       "orbit_type": "LEO",
       "result": "success",
       "company": "Rocket Lab",
-      "notes": ""
-    },
-    {
-      "id": "fb39ac94-5e74-4ee9-afc5-df19c4132b28",
-      "date": "2025-03-14",
-      "time": "23:03:48",
-      "rocket_model": "Falcon 9",
-      "launch_site": "卡纳维拉尔角",
-      "payload": "Crew-10",
-      "satellite_count": 1,
-      "satellite_nature": "载人",
-      "orbit_type": "LEO",
-      "result": "success",
-      "company": "SpaceX",
-      "notes": ""
-    },
-    {
-      "id": "f616e759-a083-442d-bd10-328ace929e9b",
-      "date": "2025-03-13",
-      "time": "02:35:30",
-      "rocket_model": "Falcon 9",
-      "launch_site": "卡纳维拉尔角",
-      "payload": "Starlink Group 12-21",
-      "satellite_count": 1,
-      "satellite_nature": "通信",
-      "orbit_type": "LEO",
-      "result": "success",
-      "company": "SpaceX",
       "notes": ""
     }
   ]

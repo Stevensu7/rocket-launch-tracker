@@ -1,7 +1,21 @@
 {
-  "last_updated": "2026-08-29T13:25:46.459764",
-  "count": 141,
+  "last_updated": "2026-09-01T12:49:43.489365",
+  "count": 142,
   "launches": [
+    {
+      "id": "a927b2f9-f9a5-4196-9abb-2e275e4a6b96",
+      "date": "2026-09-01",
+      "time": "02:00:00",
+      "rocket_model": "Pallas-1",
+      "launch_site": "酒泉",
+      "payload": "Demo Flight",
+      "satellite_count": 1,
+      "satellite_nature": "科学实验",
+      "orbit_type": "LEO",
+      "result": "success",
+      "company": "Galactic Energy",
+      "notes": ""
+    },
     {
       "id": "48c449c2-3c09-4d36-9c2a-d853b3a39289",
       "date": "2026-08-25",
